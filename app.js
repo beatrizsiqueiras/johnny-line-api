@@ -12,48 +12,26 @@ app.post("/", (req, res) => {
     const { commands } = req.body;
     const board = new five.Board({ port: "COM5" });
 
-    board.on("ready", () => {
-        // Create a new `motor` hardware instance.
-        const motorA = new five.Motor({
-            pins: {
-                pwm: 6,
-                dir: 5,
-            },
+    board.on("ready", function () {
+        var ledRed = new five.Led(5);
+        var ledBlue = new five.Led(10);
+        var interval = 2000;
+
+        commands.forEach(function (command, index) {
+            setTimeout(function () {
+                if (command.type === "nodeAdvance") {
+                    ledBlue.off();
+                    ledRed.off();
+                    ledRed.on();
+                } else if (command.type === "nodeSpin") {
+                    ledRed.off();
+                    ledBlue.off();
+                    ledBlue.on();
+                }
+            }, index * interval);
         });
-        const motorB = new five.Motor({
-            pins: {
-                pwm: 10,
-                dir: 9,
-            },
-        });
-        motorA.forward(10);
-        // motorB.forward(10);
-        // Forward at full spe
+        
     });
-
-    // board.on("ready", function () {
-    //     // var ledWhite = new five.Led(10);
-    //     // var ledBlue = new five.Led(5);
-    //     // var interval = 1000;
-
-    //     // commands.forEach(function (command, index) {
-    //     //     setTimeout(function () {
-    //     //         if (command.type === "nodeAdvance") {
-    //     //             ledWhite.off();
-    //     //             ledBlue.off();
-    //     //             ledWhite.on();
-    //     //         } else if (command.type === "nodeSpin") {
-    //     //             ledBlue.off();
-    //     //             ledWhite.off();
-    //     //             ledBlue.on();
-    //     //         }
-    //     //     }, index * interval);
-    //     // });
-    //     // ledBlue.off();
-    //     // ledWhite.off();
-    // });
-
-    // res.send(`Blinking led every ${blinkInterval}ms`);
 });
 
 app.listen(port, () => {
